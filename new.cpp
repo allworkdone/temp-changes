@@ -1,129 +1,50 @@
-Node *swapNodes(Node *head, int i, int j)
+int tripletSum(int *input, int n, int num)
 {
-    // Write your code here
-    if (i < 0 || j < 0)
-    {
-        return NULL;
-    }
-    if (head == NULL)
-    {
-        return head;
-    }
-    if (i == j)
-    {
-        return head;
-    }
-    else if ((i == 0 || j == 0) && (abs(i - j) == 1))
-    {
+    int count = 0;
+    sort(input, input + n);
 
-        Node *c1 = head;
-        Node *c2 = head->next;
-        c1->next = c2->next;
-        c2->next = c1;
-        head = c2;
-        return head;
-    }
-    else if (i != 0 && j != 0 && abs(i - j) == 1)
+    for (int i = 0; i < n - 2; i++)
     {
-        if (i > j)
+        int j = i + 1;
+        int k = n - 1;
+
+        while (j < k)
         {
-            int temp = i;
-            i = j;
-            j = temp;
+            int sum = input[i] + input[j] + input[k];
+
+            if (sum == num)
+            {
+                int left = j, right = k;
+                int val1 = input[j], val2 = input[k];
+                if (val1 == val2)
+                {
+                    int freq = right - left + 1;
+                    count += (freq * (freq - 1)) / 2;
+                    break;
+                }
+                int count1 = 0, count2 = 0;
+                while (j < k && input[j] == val1)
+                {
+                    j++;
+                    count1++;
+                }
+                while (k >= j && input[k] == val2)
+                {
+                    k--;
+                    count2++;
+                }
+                count += count1 * count2;
+            }
+            else if (sum < num)
+            {
+                j++;
+            }
+            else
+            {
+                k--;
+            }
         }
-        Node *p1 = head;
-        Node *p2 = head;
-        Node *c1;
-        Node *c2;
-        int count = 0;
-        while (count < i - 1)
-        {
-            p1 = p1->next;
-            count++;
-        }
-        c1 = p1->next;
-        count = 0;
-        while (count < j - 1)
-        {
-            p2 = p2->next;
-            count++;
-        }
-        c2 = p2->next;
-        c1->next = c2->next;
-        c2->next = c1;
-        p1->next = c2;
     }
 
-    // dikkatt...
-    else if ((i == 0 || j == 0) && (abs(i - j) != 1))
-    {
-        if (i == 0)
-        {
-            Node *c1 = head;
-            Node *c2;
-            Node *p1 = head->next;
-            Node *p2 = head;
-            int count = 0;
-            while (count < j - 1)
-            {
-                p2 = p2->next;
-                count++;
-            }
-            c2 = p2->next;
-            c1->next = c2->next;
-            c2->next = p1;
-            p2->next = c1;
-            head = c2;
-        }
-        else
-        {
-            Node *c1 = head;
-            Node *c2;
-            Node *p1 = head->next;
-            Node *p2 = head;
-            int count = 0;
-            while (count < i - 1)
-            {
-                p2 = p2->next;
-                count++;
-            }
-            c2 = p2->next;
-            c1->next = c2->next;
-            c2->next = p1;
-            p2->next = c1;
-            head = c2;
-        }
-    }
-    else
-    {
-        if (i > j)
-        {
-            int temp = i;
-            i = j;
-            j = temp;
-        }
-        int count = 0;
-        Node *c1;
-        Node *c2;
-        Node *p1 = head;
-        Node *p2 = head;
-        while (count < i - 1)
-        {
-            p1 = p1->next;
-            count++;
-        }
-        c1 = p1->next;
-        count = 0;
-        while (count < j - 1)
-        {
-            p2 = p2->next;
-            count++;
-        }
-        c2 = p2->next;
-        p1->next = c2;
-        p2->next = c1;
-        c1->next = c2->next;
-        c2->next = p2;
-    }
-    return head;
+    return count;
 }
