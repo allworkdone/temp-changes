@@ -1,50 +1,50 @@
-int tripletSum(int *input, int n, int num)
+void merge(vector<int> arr, int l, int mid, int r)
 {
-    int count = 0;
-    sort(input, input + n);
-
-    for (int i = 0; i < n - 2; i++)
+    int *arr1 = new int[mid - l + 1];
+    int *arr2 = new int[r - mid];
+    for (int i = 0; i < mid - l + 1; i++)
+        arr1[i] = arr[l + i];
+    for (int j = 0; j < r - mid; j++)
+        arr2[j] = arr[j + mid + 1];
+    int *result = new int[r - l + 1];
+    int i = 0, j = 0, k = 0;
+    while (i < mid - l + 1 && j < r - mid)
     {
-        int j = i + 1;
-        int k = n - 1;
-
-        while (j < k)
+        if (arr1[i] <= arr2[j])
         {
-            int sum = input[i] + input[j] + input[k];
-
-            if (sum == num)
-            {
-                int left = j, right = k;
-                int val1 = input[j], val2 = input[k];
-                if (val1 == val2)
-                {
-                    int freq = right - left + 1;
-                    count += (freq * (freq - 1)) / 2;
-                    break;
-                }
-                int count1 = 0, count2 = 0;
-                while (j < k && input[j] == val1)
-                {
-                    j++;
-                    count1++;
-                }
-                while (k >= j && input[k] == val2)
-                {
-                    k--;
-                    count2++;
-                }
-                count += count1 * count2;
-            }
-            else if (sum < num)
-            {
-                j++;
-            }
-            else
-            {
-                k--;
-            }
+            result[k] = arr1[i];
+            i++;
+            k++;
+        }
+        else
+        {
+            result[k] = arr2[j];
+            j++;
+            k++;
         }
     }
-
-    return count;
+    while (i < mid - l + 1)
+    {
+        result[k] = arr1[i];
+        i++;
+        k++;
+    }
+    while (j < r - mid)
+    {
+        result[k] = arr2[j];
+        j++;
+        k++;
+    }
+    for (int i = 0; i < r - l + 1; i++)
+        arr[i] = result[i];
+}
+void mergeSort(vector<int> &arr, int l, int r)
+{
+    // Write Your Code Here
+    if (l >= r)
+        return;
+    int mid = (l + r) / 2;
+    mergeSort(arr, l, mid);
+    mergeSort(arr, mid + 1, r);
+    merge(arr, l, mid, r);
 }
