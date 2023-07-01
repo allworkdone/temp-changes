@@ -1,4 +1,5 @@
 #include <limits.h>
+
 class BST
 {
     BinaryTreeNode<int> *root;
@@ -30,7 +31,7 @@ class BST
             BinaryTreeNode<int> *n = new BinaryTreeNode<int>(data);
             return n;
         }
-        if (root->data >= data)
+        if (node->data >= data)
         {
             node->left = insertHelper(data, node->left);
         }
@@ -87,26 +88,36 @@ class BST
                 return node;
             }
         }
+        return node;
     }
 
     void printHelper(BinaryTreeNode<int> *node)
     {
         if (node == NULL)
             return;
-        cout << node->data << ":";
+        std::cout << node->data << ":";
         if (node->left)
         {
-            cout << "L:" << node->left->data << ",";
+            std::cout << "L:" << node->left->data << ",";
         }
         if (node->right)
         {
-            cout << "R:" << node->right->data;
+            std::cout << "R:" << node->right->data;
         }
-        cout << endl;
+        std::cout << std::endl;
         if (node->left)
             printHelper(node->left);
         if (node->right)
             printHelper(node->right);
+    }
+
+    void deleteTree(BinaryTreeNode<int> *node)
+    {
+        if (node == NULL)
+            return;
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
     }
 
 public:
@@ -117,30 +128,26 @@ public:
 
     ~BST()
     {
-        delete root;
+        deleteTree(root);
     }
 
     void remove(int data)
     {
-        // Implement the remove() function
-        this->root = removeHelper(data, this->root);
+        root = removeHelper(data, root);
     }
 
     void print()
     {
-        // Implement the print() function
         printHelper(root);
     }
 
     void insert(int data)
     {
-        // Implement the insert() function
-        this->root = insertHelper(data, this->root);
+        root = insertHelper(data, root);
     }
 
     bool search(int data)
     {
-        // Implement the search() function
         return searchHelper(data, root);
     }
 };
