@@ -1,10 +1,20 @@
-#include <limits.h>
-
+#include <climits>
 class BST
 {
     BinaryTreeNode<int> *root;
 
-    bool searchHelper(int data, BinaryTreeNode<int> *node)
+public:
+    BST()
+    {
+        root = NULL;
+    }
+    ~BST()
+    {
+        delete root;
+    }
+
+private:
+    bool search(int data, BinaryTreeNode<int> *node)
     {
         if (node == NULL)
         {
@@ -16,138 +26,118 @@ class BST
         }
         else if (node->data > data)
         {
-            return searchHelper(data, node->left);
+            return search(data, node->left);
         }
         else
         {
-            return searchHelper(data, node->right);
+            return search(data, node->right);
         }
     }
-
-    BinaryTreeNode<int> *insertHelper(int data, BinaryTreeNode<int> *node)
+    BinaryTreeNode<int> *insert(int data, BinaryTreeNode<int> *node)
     {
         if (node == NULL)
         {
-            BinaryTreeNode<int> *n = new BinaryTreeNode<int>(data);
-            return n;
+            BinaryTreeNode<int> *newnode = new BinaryTreeNode<int>(data);
+            return newnode;
         }
-        if (node->data >= data)
+        if (data < node->data)
         {
-            node->left = insertHelper(data, node->left);
+            node->left = insert(data, node->left);
         }
         else
         {
-            node->right = insertHelper(data, node->right);
+            node->right = insert(data, node->right);
         }
         return node;
     }
-
-    BinaryTreeNode<int> *removeHelper(int data, BinaryTreeNode<int> *node)
+    BinaryTreeNode<int> *remove(int data, BinaryTreeNode<int> *node)
     {
         if (node == NULL)
         {
             return NULL;
         }
-        if (data < node->data)
+        if (data > node->data)
         {
-            node->left = removeHelper(data, node->left);
+            node->right = remove(data, node->right);
         }
-        else if (data > node->data)
+        else if (data < node->data)
         {
-            node->right = removeHelper(data, node->right);
+            node->left = remove(data, node->left);
         }
         else
         {
-            if (node->left == NULL && node->right == NULL)
+            if (node->left == NULL and node->right == NULL)
             {
                 delete node;
                 return NULL;
             }
-            else if (node->right == NULL)
-            {
-                BinaryTreeNode<int> *temp = node->left;
-                delete node;
-                return temp;
-            }
             else if (node->left == NULL)
             {
-                BinaryTreeNode<int> *temp = node->right;
+                BinaryTreeNode<int> *ans = node->right;
+                node->right = NULL;
                 delete node;
-                return temp;
+                return ans;
+            }
+            else if (node->right == NULL)
+            {
+                BinaryTreeNode<int> *ans = node->left;
+                node->left = NULL;
+                delete node;
+                return ans;
             }
             else
             {
-                BinaryTreeNode<int> *minnode = node->right;
-                while (minnode->left != NULL)
+                BinaryTreeNode<int> *minNode = node->right;
+                while (minNode->left != NULL)
                 {
-                    minnode = minnode->left;
+                    minNode = minNode->left;
                 }
-                int replacement = minnode->data;
-                node->data = replacement;
-                node->right = removeHelper(replacement, node->right);
+                int rightMin = minNode->data;
+                node->data = rightMin;
+                node->right = remove(rightMin, node->right);
                 return node;
             }
         }
-        return node;
     }
-
-    void printHelper(BinaryTreeNode<int> *node)
+    void print(BinaryTreeNode<int> *node)
     {
         if (node == NULL)
+        {
             return;
-        std::cout << node->data << ":";
-        if (node->left)
-        {
-            std::cout << "L:" << node->left->data << ",";
         }
-        if (node->right)
+        cout << node->data << ":";
+        if (node->left != NULL)
         {
-            std::cout << "R:" << node->right->data;
+            cout << "L:" << node->left->data << ",";
         }
-        std::cout << std::endl;
-        if (node->left)
-            printHelper(node->left);
-        if (node->right)
-            printHelper(node->right);
-    }
 
-    void deleteTree(BinaryTreeNode<int> *node)
-    {
-        if (node == NULL)
-            return;
-        deleteTree(node->left);
-        deleteTree(node->right);
-        delete node;
+        if (node->right != NULL)
+        {
+            cout << "R:" << node->right->data;
+        }
+        cout << endl;
+        print(node->left);
+        print(node->right);
     }
 
 public:
-    BST()
-    {
-        root = NULL;
-    }
-
-    ~BST()
-    {
-        deleteTree(root);
-    }
-
     void remove(int data)
     {
-        root = removeHelper(data, root);
+        root = remove(data, root);
     }
 
     void print()
     {
-        printHelper(root);
+        print(root);
     }
 
     void insert(int data)
     {
-        root = insertHelper(data, root);
+        this->root = insert(data, this->root);
     }
 
     bool search(int data)
     {
-        return searchHelper(data, root);
+        return search(data, root);
     }
 };
