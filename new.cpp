@@ -1,19 +1,9 @@
 #include <climits>
 class BST
 {
+private:
     BinaryTreeNode<int> *root;
 
-public:
-    BST()
-    {
-        root = NULL;
-    }
-    ~BST()
-    {
-        delete root;
-    }
-
-private:
     bool search(int data, BinaryTreeNode<int> *node)
     {
         if (node == NULL)
@@ -33,6 +23,7 @@ private:
             return search(data, node->right);
         }
     }
+
     BinaryTreeNode<int> *insert(int data, BinaryTreeNode<int> *node)
     {
         if (node == NULL)
@@ -40,7 +31,7 @@ private:
             BinaryTreeNode<int> *newnode = new BinaryTreeNode<int>(data);
             return newnode;
         }
-        if (data < node->data)
+        if (data <= node->data)
         {
             node->left = insert(data, node->left);
         }
@@ -50,6 +41,7 @@ private:
         }
         return node;
     }
+
     BinaryTreeNode<int> *remove(int data, BinaryTreeNode<int> *node)
     {
         if (node == NULL)
@@ -66,7 +58,7 @@ private:
         }
         else
         {
-            if (node->left == NULL and node->right == NULL)
+            if (node->left == NULL && node->right == NULL)
             {
                 delete node;
                 return NULL;
@@ -99,28 +91,38 @@ private:
             }
         }
     }
+
     void print(BinaryTreeNode<int> *node)
     {
         if (node == NULL)
         {
             return;
         }
-        cout << node->data << ":";
+        std::cout << node->data << ":";
         if (node->left != NULL)
         {
-            cout << "L:" << node->left->data << ",";
+            std::cout << "L:" << node->left->data << ",";
         }
-
         if (node->right != NULL)
         {
-            cout << "R:" << node->right->data;
+            std::cout << "R:" << node->right->data;
         }
-        cout << endl;
+        std::cout << std::endl;
         print(node->left);
         print(node->right);
     }
 
 public:
+    BST()
+    {
+        root = NULL;
+    }
+
+    ~BST()
+    {
+        deleteTree(root);
+    }
+
     void remove(int data)
     {
         root = remove(data, root);
@@ -133,11 +135,22 @@ public:
 
     void insert(int data)
     {
-        this->root = insert(data, this->root);
+        root = insert(data, root);
     }
 
     bool search(int data)
     {
         return search(data, root);
+    }
+
+    void deleteTree(BinaryTreeNode<int> *node)
+    {
+        if (node == NULL)
+        {
+            return;
+        }
+        deleteTree(node->left);
+        deleteTree(node->right);
+        delete node;
     }
 };
