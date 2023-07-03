@@ -1,156 +1,70 @@
-#include <climits>
-class BST
+#include <iostream>
+#include <queue>
+using namespace std;
+
+void printBFS(int **edges, int V, int sv)
 {
-private:
-    BinaryTreeNode<int> *root;
-
-    bool search(int data, BinaryTreeNode<int> *node)
+    if (V == 0)
     {
-        if (node == NULL)
-        {
-            return false;
-        }
-        if (node->data == data)
-        {
-            return true;
-        }
-        else if (node->data > data)
-        {
-            return search(data, node->left);
-        }
-        else
-        {
-            return search(data, node->right);
-        }
+        return;
     }
-
-    BinaryTreeNode<int> *insert(int data, BinaryTreeNode<int> *node)
+    queue<int> pendingvertices;
+    bool *visited = new bool[V];
+    for (int i = 0; i < V; i++)
     {
-        if (node == NULL)
-        {
-            BinaryTreeNode<int> *newnode = new BinaryTreeNode<int>(data);
-            return newnode;
-        }
-        if (data <= node->data)
-        {
-            node->left = insert(data, node->left);
-        }
-        else
-        {
-            node->right = insert(data, node->right);
-        }
-        return node;
+        visited[i] = false;
     }
-
-    BinaryTreeNode<int> *remove(int data, BinaryTreeNode<int> *node)
+    pendingvertices.push(sv);
+    visited[sv] = true;
+    while (!pendingvertices.empty())
     {
-        if (node == NULL)
+        int currentvertex = pendingvertices.front();
+        pendingvertices.pop();
+        cout << currentvertex << " ";
+        for (int i = 0; i < V; i++)
         {
-            return NULL;
-        }
-        if (data > node->data)
-        {
-            node->right = remove(data, node->right);
-        }
-        else if (data < node->data)
-        {
-            node->left = remove(data, node->left);
-        }
-        else
-        {
-            if (node->left == NULL && node->right == NULL)
+            if (i == currentvertex)
             {
-                delete node;
-                return NULL;
+                continue;
             }
-            else if (node->left == NULL)
+            if (edges[currentvertex][i] == 1 && !visited[i])
             {
-                BinaryTreeNode<int> *ans = node->right;
-                node->right = NULL;
-                delete node;
-                return ans;
-            }
-            else if (node->right == NULL)
-            {
-                BinaryTreeNode<int> *ans = node->left;
-                node->left = NULL;
-                delete node;
-                return ans;
-            }
-            else
-            {
-                BinaryTreeNode<int> *minNode = node->right;
-                while (minNode->left != NULL)
-                {
-                    minNode = minNode->left;
-                }
-                int rightMin = minNode->data;
-                node->data = rightMin;
-                node->right = remove(rightMin, node->right);
-                return node;
+                pendingvertices.push(i);
+                visited[i] = true;
             }
         }
     }
+    delete[] visited;
+}
 
-    void print(BinaryTreeNode<int> *node)
+int main()
+{
+    // Write your code here
+    int V;
+    int E;
+    cin >> V >> E;
+    int **edges = new int *[V];
+    for (int i = 0; i < V; i++)
     {
-        if (node == NULL)
+        edges[i] = new int[V];
+        for (int j = 0; j < V; j++)
         {
-            return;
+            edges[i][j] = 0;
         }
-        std::cout << node->data << ":";
-        if (node->left != NULL)
-        {
-            std::cout << "L:" << node->left->data << ",";
-        }
-        if (node->right != NULL)
-        {
-            std::cout << "R:" << node->right->data;
-        }
-        std::cout << std::endl;
-        print(node->left);
-        print(node->right);
     }
 
-public:
-    BST()
+    for (int i = 0; i < E; i++)
     {
-        root = NULL;
+        int f, s;
+        cin >> f >> s;
+        edges[f][s] = 1;
+        edges[s][f] = 1;
     }
+    printBFS(edges, V, 0);
 
-    ~BST()
+    for (int i = 0; i < V; i++)
     {
-        deleteTree(root);
+        delete[] edges[i];
     }
-
-    void remove(int data)
-    {
-        root = remove(data, root);
-    }
-
-    void print()
-    {
-        print(root);
-    }
-
-    void insert(int data)
-    {
-        root = insert(data, root);
-    }
-
-    bool search(int data)
-    {
-        return search(data, root);
-    }
-
-    void deleteTree(BinaryTreeNode<int> *node)
-    {
-        if (node == NULL)
-        {
-            return;
-        }
-        deleteTree(node->left);
-        deleteTree(node->right);
-        delete node;
-    }
-};
+    delete[] edges;
+}
