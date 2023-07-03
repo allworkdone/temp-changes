@@ -2,47 +2,58 @@
 #include <queue>
 using namespace std;
 
-void printBFS(int **edges, int V, int sv)
+void printBFS(int **edges, int V, int sv, bool *visited)
 {
-    if (V == 0)
+    queue<int> pendingVertices;
+    pendingVertices.push(sv);
+    visited[sv] = true;
+
+    while (!pendingVertices.empty())
     {
-        return;
+        int currentVertex = pendingVertices.front();
+        pendingVertices.pop();
+        cout << currentVertex << " ";
+
+        for (int i = 0; i < V; i++)
+        {
+            if (i == currentVertex)
+            {
+                continue;
+            }
+
+            if (edges[currentVertex][i] == 1 && !visited[i])
+            {
+                pendingVertices.push(i);
+                visited[i] = true;
+            }
+        }
     }
-    queue<int> pendingvertices;
+}
+
+void BFS(int **edges, int V)
+{
     bool *visited = new bool[V];
     for (int i = 0; i < V; i++)
     {
         visited[i] = false;
     }
-    pendingvertices.push(sv);
-    visited[sv] = true;
-    while (!pendingvertices.empty())
+
+    for (int i = 0; i < V; i++)
     {
-        int currentvertex = pendingvertices.front();
-        pendingvertices.pop();
-        cout << currentvertex << " ";
-        for (int i = 0; i < V; i++)
+        if (!visited[i])
         {
-            if (i == currentvertex)
-            {
-                continue;
-            }
-            if (edges[currentvertex][i] == 1 && !visited[i])
-            {
-                pendingvertices.push(i);
-                visited[i] = true;
-            }
+            printBFS(edges, V, i, visited);
         }
     }
+
     delete[] visited;
 }
 
 int main()
 {
-    // Write your code here
-    int V;
-    int E;
+    int V, E;
     cin >> V >> E;
+
     int **edges = new int *[V];
     for (int i = 0; i < V; i++)
     {
@@ -57,14 +68,27 @@ int main()
     {
         int f, s;
         cin >> f >> s;
-        edges[f][s] = 1;
-        edges[s][f] = 1;
-    }
-    printBFS(edges, V, 0);
 
+        // Perform bounds checking for vertex indices
+        if (f >= 0 && f < V && s >= 0 && s < V)
+        {
+            edges[f][s] = 1;
+            edges[s][f] = 1;
+        }
+        else
+        {
+            cerr << "Invalid vertex indices: (" << f << ", " << s << ")" << endl;
+        }
+    }
+
+    BFS(edges, V);
+
+    // Deallocate dynamically allocated memory
     for (int i = 0; i < V; i++)
     {
         delete[] edges[i];
     }
     delete[] edges;
+
+    return 0;
 }
