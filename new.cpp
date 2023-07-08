@@ -1,94 +1,52 @@
-#include <iostream>
-#include <queue>
-using namespace std;
-
-void printBFS(int **edges, int V, int sv, bool *visited)
+#include <unordered_map>
+vector<int> longestConsecutiveIncreasingSequence(int *arr, int n)
 {
-    queue<int> pendingVertices;
-    pendingVertices.push(sv);
-    visited[sv] = true;
-
-    while (!pendingVertices.empty())
+    // Your Code goes here
+    unordered_map<int, int> m;
+    for (int i = 0; i < n; i++)
     {
-        int currentVertex = pendingVertices.front();
-        pendingVertices.pop();
-        cout << currentVertex << " ";
-
-        for (int i = 0; i < V; i++)
+        m[arr[i]]++;
+    }
+    int start, count, x, maxcount = -1, index1, index2;
+    vector<int> v;
+    for (int i = 0; i < n; i++)
+    {
+        count = 0;
+        start = arr[i];
+        int x = arr[i];
+        while (m.count(x + 1) > 0)
         {
-            if (i == currentVertex)
+            count++;
+            x++;
+        }
+        while (m.count(start - 1) > 0)
+        {
+            count++;
+            start--;
+        }
+        if (count == 0)
+            v[0] = arr[0];
+        else if (count > maxcount)
+        {
+            v[0] = start;
+            v[1] = start + count;
+            maxcount = count;
+        }
+        else if (count == maxcount)
+        {
+            for (int i = 0; i < n; i++)
             {
-                continue;
+                if (arr[i] == v[0])
+                    index1 = i;
+                if (arr[i] == start)
+                    index2 = i;
             }
-
-            if (edges[currentVertex][i] == 1 && !visited[i])
+            if (index2 < index1)
             {
-                pendingVertices.push(i);
-                visited[i] = true;
+                v[0] = start;
+                v[1] = start + count;
             }
         }
     }
-}
-
-void BFS(int **edges, int V)
-{
-    bool *visited = new bool[V];
-    for (int i = 0; i < V; i++)
-    {
-        visited[i] = false;
-    }
-
-    for (int i = 0; i < V; i++)
-    {
-        if (!visited[i])
-        {
-            printBFS(edges, V, i, visited);
-        }
-    }
-
-    delete[] visited;
-}
-
-int main()
-{
-    int V, E;
-    cin >> V >> E;
-
-    int **edges = new int *[V];
-    for (int i = 0; i < V; i++)
-    {
-        edges[i] = new int[V];
-        for (int j = 0; j < V; j++)
-        {
-            edges[i][j] = 0;
-        }
-    }
-
-    for (int i = 0; i < E; i++)
-    {
-        int f, s;
-        cin >> f >> s;
-
-        // Perform bounds checking for vertex indices
-        if (f >= 0 && f < V && s >= 0 && s < V)
-        {
-            edges[f][s] = 1;
-            edges[s][f] = 1;
-        }
-        else
-        {
-            cerr << "Invalid vertex indices: (" << f << ", " << s << ")" << endl;
-        }
-    }
-
-    BFS(edges, V);
-
-    // Deallocate dynamically allocated memory
-    for (int i = 0; i < V; i++)
-    {
-        delete[] edges[i];
-    }
-    delete[] edges;
-
-    return 0;
+    return v;
 }
